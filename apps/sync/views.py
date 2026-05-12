@@ -5,6 +5,8 @@ from django.utils import timezone
 from django.db import transaction
 from apps.cases.models import Case, CaseNote
 from apps.cases.serializers import CaseSerializer, CaseNoteSerializer
+from apps.alerts.models import Alert
+from apps.alerts.views import AlertSerializer
 
 
 class SyncPushView(APIView):
@@ -126,9 +128,15 @@ class SyncPullView(APIView):
                 updated_at__gt=last_sync,
             )
 
+            alerts = Alert.objects.filter(
+                organization=org,
+                created_at__gt=last_sync,
+            )
+
             return Response({
                 'cases': CaseSerializer(cases, many=True).data,
                 'notes': CaseNoteSerializer(notes, many=True).data,
+                'alerts': AlertSerializer(alerts, many=True).data,
                 'server_time': timezone.now().strftime('%Y-%m-%dT%H:%M:%S.%f') + 'Z',
             })
         except Exception as e:
