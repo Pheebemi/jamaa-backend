@@ -1,4 +1,3 @@
-import google.generativeai as genai
 from django.conf import settings
 import json
 import re
@@ -6,9 +5,10 @@ import re
 
 def analyze_case(case_id: str):
     try:
-        genai.configure(api_key=settings.GEMINI_API_KEY)
-
+        from google import genai
         from apps.cases.models import Case
+
+        client = genai.Client(api_key=settings.GEMINI_API_KEY)
         case = Case.objects.get(id=case_id)
 
         if case.is_sensitive:
@@ -30,8 +30,10 @@ Case title: {case.title}
 Case description: {case.description}
 Case type: {case.type}"""
 
-        model = genai.GenerativeModel('gemini-2.0-flash')
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model='gemini-2.0-flash',
+            contents=prompt,
+        )
 
         text = response.text.strip()
         json_match = re.search(r'\{.*\}', text, re.DOTALL)
