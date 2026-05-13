@@ -30,10 +30,19 @@ Case title: {case.title}
 Case description: {case.description}
 Case type: {case.type}"""
 
-        response = client.models.generate_content(
-            model='gemini-2.0-flash',
-            contents=prompt,
-        )
+        import time
+        for attempt in range(3):
+            try:
+                response = client.models.generate_content(
+                    model='gemini-2.0-flash',
+                    contents=prompt,
+                )
+                break
+            except Exception as e:
+                if '429' in str(e) and attempt < 2:
+                    time.sleep(10 * (attempt + 1))
+                else:
+                    raise
 
         text = response.text.strip()
         json_match = re.search(r'\{.*\}', text, re.DOTALL)
