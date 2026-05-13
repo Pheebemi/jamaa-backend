@@ -1,16 +1,13 @@
-from celery import shared_task
 import google.generativeai as genai
 from django.conf import settings
 import json
 import re
 
 
-genai.configure(api_key=settings.GEMINI_API_KEY)
-
-
-@shared_task
 def analyze_case(case_id: str):
     try:
+        genai.configure(api_key=settings.GEMINI_API_KEY)
+
         from apps.cases.models import Case
         case = Case.objects.get(id=case_id)
 

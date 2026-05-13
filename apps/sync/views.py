@@ -61,11 +61,11 @@ class SyncPushView(APIView):
             for item in request.data.get('notes', []):
                 self._process_note(item, request.user, created, updated, conflicts)
 
-        # Fire AI tasks AFTER the transaction commits to avoid locking SQLite
+        # Run AI analysis synchronously after commit — no Celery needed
         try:
             from apps.ai.tasks import analyze_case
             for case_id in ai_case_ids:
-                analyze_case.delay(case_id)
+                analyze_case(case_id)
         except Exception:
             pass
 
