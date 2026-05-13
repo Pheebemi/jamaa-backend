@@ -61,11 +61,13 @@ class SyncPushView(APIView):
             for item in request.data.get('notes', []):
                 self._process_note(item, request.user, created, updated, conflicts)
 
-        # Run AI analysis synchronously after commit — no Celery needed
+        # Run AI in background thread — returns immediately, doesn't block the response
         try:
             from apps.ai.tasks import analyze_case
+            import threading
             for case_id in ai_case_ids:
-                analyze_case(case_id)
+                t = threading.Thread(target=analyze_case, args=(case_id,), daemon=True)
+                t.start()
         except Exception:
             pass
 
