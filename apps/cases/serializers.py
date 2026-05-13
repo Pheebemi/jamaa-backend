@@ -20,15 +20,18 @@ class CaseNoteSerializer(serializers.ModelSerializer):
 
 
 class CaseSerializer(serializers.ModelSerializer):
-    org_id = serializers.SerializerMethodField()
-    assigned_to = serializers.SerializerMethodField()
-    created_by = serializers.SerializerMethodField()
+    org_id           = serializers.SerializerMethodField()
+    assigned_to      = serializers.SerializerMethodField()
+    created_by       = serializers.SerializerMethodField()
+    created_by_name  = serializers.SerializerMethodField()
+    created_by_email = serializers.SerializerMethodField()
 
     class Meta:
         model = Case
         fields = [
             'id', 'org_id', 'title', 'description', 'type', 'priority', 'status',
-            'assigned_to', 'created_by', 'is_sensitive', 'location_lat', 'location_lng',
+            'assigned_to', 'created_by', 'created_by_name', 'created_by_email',
+            'is_sensitive', 'location_lat', 'location_lng',
             'ai_summary', 'ai_category', 'ai_priority', 'ai_urgency_score', 'ai_suggested_action',
             'created_at', 'updated_at', 'deleted_at',
         ]
@@ -41,3 +44,9 @@ class CaseSerializer(serializers.ModelSerializer):
 
     def get_created_by(self, obj):
         return str(obj.created_by_id)
+
+    def get_created_by_name(self, obj):
+        return obj.created_by.name if obj.created_by else None
+
+    def get_created_by_email(self, obj):
+        return obj.created_by.email if obj.created_by else None
