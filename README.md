@@ -3,9 +3,6 @@
 > REST API for the Jamaa Offline-First AI Case Management Platform
 > Built with Django REST Framework — deployed on PythonAnywhere
 
-**Live API:** https://jamaa.pythonanywhere.com/api  
-**Admin Panel:** https://jamaa.pythonanywhere.com/admin
-
 ---
 
 ## Overview
